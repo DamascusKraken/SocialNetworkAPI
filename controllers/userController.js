@@ -1,4 +1,4 @@
-const User = require("./models/User");
+const { User } = require('./models/User');
 
 const userTotal = async () => {
   const numberOfUsers = await User.aggregate().count("userCount");
@@ -6,27 +6,27 @@ const userTotal = async () => {
 };
 
 module.exports = {
-  //get all Users
+  //Get all Users
   async getUsers(req, res) {
     try {
-      const users = await Student.find();
+      const users = await User.find();
 
       const userObj = {
         users,
         userTotal: await userTotal(),
       };
 
-      res.json(studentObj);
+      res.json(userObj);
     } catch (err) {
       console.log(err);
       return res.status(500).json(err);
     }
   },
 
-  //get  single user by its _id and populate thought and friend data
+  //Get  single user by its _id and populate thought and friend data
   async getSingleUser(req, res) {
     try {
-      const user = await User.findOne({ _id: req.params.userId })
+      const user = await User.findOne({ userId: req.params.userId })
         .select("-__v")
         .populate("thoughts")
         .populate("friends");
@@ -42,7 +42,7 @@ module.exports = {
   },
 
   // /api/users
-  //create a new user
+  //Create a new user
   async createUser(req, res) {
     try {
       const { username, email } = req.body;
@@ -60,7 +60,7 @@ module.exports = {
     try {
       const { username, email } = req.body;
       const updatedUser = await User.findOneAndUpdate(
-        { _id: req.params.userId },
+        {  userId: req.params.userId },
         { $set: { username: username, email: email } },
         { new: true }
       );
@@ -78,8 +78,8 @@ module.exports = {
   //Delete to remove user by _id
   async deleteUser(req, res) {
     try {
-      const deletedUser = await User.findOneAndDelete({
-        _id: req.params.userId,
+      const deletedUser = await User.deleteOne({
+        userId: req.params.userId,
       });
 
       if (!deletedUser) {
@@ -101,7 +101,7 @@ module.exports = {
       const friendId = req.params.friendId;
 
       //validate user and friend exist
-      const user = await User.findOne({ _id: req.params.userId });
+      const user = await User.findOne({ userId: req.params.userId });
       const friend = await User.findOne(friendId);
 
       if (!user || !friend) {
@@ -131,7 +131,7 @@ module.exports = {
       const friendId = req.params.friendId;
 
       //check if user exists
-      const user = await User.findOne({ _id: req.params.userId });
+      const user = await User.findOne({ userId: req.params.userId });
 
       if (!user) {
         return res.status(404).json({ error: "User not found" });
