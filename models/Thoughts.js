@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-const reactionSchema = require('./Reaction');
+const reactionSchema = require("./Reaction");
 
 const thoughtSchema = new Schema({
   thoughtText: {
@@ -20,10 +20,23 @@ const thoughtSchema = new Schema({
 });
 
 //Create a virtual property for reactionCount
-thoughtSchema.virtual('reactionCount').get(function() {
-    return this. reactions.length;
+thoughtSchema.virtual("reactionCount").get(function () {
+  return this.reactions.length;
 });
 
-const Thought = model('thought', thoughtSchema);
+//Getter method to format timestamp
+thoughtSchema.virtual("formattedCreatedAt").get(function () {
+  const options = {
+    month: "2-digit",
+    day: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  };
+  return this.createdAt.toLocaleString("en-US", options);
+});
+
+const Thought = model("thought", thoughtSchema);
 
 module.exports = Thought;
